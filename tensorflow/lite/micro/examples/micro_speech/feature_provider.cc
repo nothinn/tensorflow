@@ -41,6 +41,8 @@ TfLiteStatus FeatureProvider::PopulateFeatureData(
     return kTfLiteError;
   }
 
+  TF_LITE_REPORT_ERROR(error_reporter,"PopulateFeatureData"); //REMOVE
+
   // Quantize the time into steps as long as each window stride, so we can
   // figure out which audio data we need to fetch.
   const int last_step = (last_time_in_ms / kFeatureSliceStrideMs);
@@ -48,7 +50,7 @@ TfLiteStatus FeatureProvider::PopulateFeatureData(
 
   int slices_needed = current_step - last_step;
   // If this is the first call, make sure we don't use any cached information.
-  if (is_first_run_) {
+  if (is_first_run_ && false) {
     TfLiteStatus init_status = InitializeMicroFeatures(error_reporter);
     if (init_status != kTfLiteOk) {
       return init_status;
@@ -60,6 +62,9 @@ TfLiteStatus FeatureProvider::PopulateFeatureData(
     slices_needed = kFeatureSliceCount;
   }
   *how_many_new_slices = slices_needed;
+
+  TF_LITE_REPORT_ERROR(error_reporter,"InitializedMicroFeatures"); //REMOVE
+
 
   const int slices_to_keep = kFeatureSliceCount - slices_needed;
   const int slices_to_drop = kFeatureSliceCount - slices_to_keep;
@@ -108,6 +113,8 @@ TfLiteStatus FeatureProvider::PopulateFeatureData(
       }
       uint8_t* new_slice_data = feature_data_ + (new_slice * kFeatureSliceSize);
       size_t num_samples_read;
+      TF_LITE_REPORT_ERROR(error_reporter,"GenerateMicroFeaturesCall"); //REMOVE
+      
       TfLiteStatus generate_status = GenerateMicroFeatures(
           error_reporter, audio_samples, audio_samples_size, kFeatureSliceSize,
           new_slice_data, &num_samples_read);
@@ -116,5 +123,7 @@ TfLiteStatus FeatureProvider::PopulateFeatureData(
       }
     }
   }
+  TF_LITE_REPORT_ERROR(error_reporter,"GotAudioSamples"); //REMOVE
+
   return kTfLiteOk;
 }

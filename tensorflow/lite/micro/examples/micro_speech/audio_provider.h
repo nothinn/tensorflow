@@ -19,6 +19,10 @@ limitations under the License.
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/micro/micro_error_reporter.h"
 
+
+#include "tensorflow/lite/micro/examples/micro_speech/no_1000ms_sample_data.h"
+#include "tensorflow/lite/micro/examples/micro_speech/yes_1000ms_sample_data.h"
+
 // This is an abstraction around an audio source like a microphone, and is
 // expected to return 16-bit PCM sample data for a given point in time. The
 // sample data itself should be used as quickly as possible by the caller, since

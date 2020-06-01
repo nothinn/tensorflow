@@ -17,6 +17,9 @@ limitations under the License.
 
 #include "tensorflow/lite/micro/examples/micro_speech/micro_features/micro_model_settings.h"
 
+#include "tensorflow/lite/core/api/error_reporter.h"
+
+
 namespace {
 int16_t g_dummy_audio_data[kMaxAudioSampleSize];
 int32_t g_latest_audio_timestamp = 0;
@@ -25,6 +28,7 @@ int32_t g_latest_audio_timestamp = 0;
 TfLiteStatus GetAudioSamples(tflite::ErrorReporter* error_reporter,
                              int start_ms, int duration_ms,
                              int* audio_samples_size, int16_t** audio_samples) {
+  //TF_LITE_REPORT_ERROR(error_reporter, "GetAudioSamples called");
   for (int i = 0; i < kMaxAudioSampleSize; ++i) {
     g_dummy_audio_data[i] = 0;
   }

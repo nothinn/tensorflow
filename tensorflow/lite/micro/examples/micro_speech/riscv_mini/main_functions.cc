@@ -122,10 +122,15 @@ void setup() {
   recognizer = &static_recognizer;
 
   previous_time = 0;
+
+  TF_LITE_REPORT_ERROR(error_reporter, "Setup done");
+
 }
 
 // The name of this function is important for Arduino compatibility.
 void loop() {
+  TF_LITE_REPORT_ERROR(error_reporter, "started loop");
+
   // Fetch the spectrogram for the current time.
   const int32_t current_time = LatestAudioTimestamp();
   int how_many_new_slices = 1;/*
@@ -135,6 +140,8 @@ void loop() {
     TF_LITE_REPORT_ERROR(error_reporter, "Feature generation failed");
     return;
   }*/
+  TF_LITE_REPORT_ERROR(error_reporter, "got time");
+
   previous_time = current_time;
   // If no new audio samples have been received since last time, don't bother
   // running the network model.
@@ -148,12 +155,18 @@ void loop() {
     model_input_buffer[i] = g_yes_micro_f2e59fea_nohash_1_data[i];
   }
 
+  TF_LITE_REPORT_ERROR(error_reporter, "Copied features");
+
+
   // Run the model on the spectrogram input and make sure it succeeds.
   TfLiteStatus invoke_status = interpreter->Invoke();
   if (invoke_status != kTfLiteOk) {
     TF_LITE_REPORT_ERROR(error_reporter, "Invoke failed");
     return;
   }
+
+  TF_LITE_REPORT_ERROR(error_reporter, "Invoked");
+
 
   // Obtain a pointer to the output tensor
   TfLiteTensor* output = interpreter->output(0);
@@ -163,14 +176,21 @@ void loop() {
   bool is_new_command = false;
   TfLiteStatus process_status = recognizer->ProcessLatestResults(
       output, current_time, &found_command, &score, &is_new_command);
+  TF_LITE_REPORT_ERROR(error_reporter, "ProcessedResults");
+  
   if (process_status != kTfLiteOk) {
     TF_LITE_REPORT_ERROR(error_reporter,
                          "RecognizeCommands::ProcessLatestResults() failed");
     return;
   }
+
+  
   // Do something based on the recognized command. The default implementation
   // just prints to the error console, but you should replace this with your
   // own function for a real application.
   RespondToCommand(error_reporter, current_time, found_command, score,
                    is_new_command);
+
+  TF_LITE_REPORT_ERROR(error_reporter, "Responded to command");
+
 }

@@ -1,31 +1,35 @@
-/* Copyright 2019 The TensorFlow Authors. All Rights Reserved.
-
+/* Copyright 2018 The TensorFlow Authors. All Rights Reserved.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
-
     http://www.apache.org/licenses/LICENSE-2.0
-
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
+// TODO(b/121324430): Add test for DebugLog functions
+// TODO(b/121275099): Remove dependency on debug_log once the platform supports
+// printf
 
-#include "tensorflow/lite/micro/examples/hello_world/main_functions.h"
+#include <stdio.h>
+#include <string.h>
 
-// This is the default main used on systems that have the standard C entry
-// point. Other devices (for example FreeRTOS or ESP32) that have different
-// requirements for entry code (like an app_main function) should specialize
-// this main.cc file in a target-specific subfolder.
-
+#define UART_START (*(volatile unsigned int *)0x80000004)
+#define UART_END (*(volatile unsigned int *)0x80000008)
 
 
-int main(int argc, char* argv[]) {
-  
-  setup();
-  while (true) {
-    loop();
-  }
+void printstr(const char* s)
+{
+    UART_START = (int)s;
+    UART_END = (int)s + strlen(s);
+
+
+}
+
+
+extern "C" void DebugLog(const char* s) { 
+    printstr(s);
+    printstr("\n");
 }

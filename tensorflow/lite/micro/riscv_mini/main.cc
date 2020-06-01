@@ -15,17 +15,16 @@ limitations under the License.
 
 #include "tensorflow/lite/micro/examples/hello_world/main_functions.h"
 
-// This is the default main used on systems that have the standard C entry
-// point. Other devices (for example FreeRTOS or ESP32) that have different
-// requirements for entry code (like an app_main function) should specialize
-// this main.cc file in a target-specific subfolder.
+extern "C"{
+  void _start()__attribute__ ((section (".text.init")));
+  extern int main(int, char* []);
 
-
-
-int main(int argc, char* argv[]) {
-  
-  setup();
-  while (true) {
-    loop();
+  void _start() {
+    __asm volatile(".option push");
+    __asm volatile(".option norelax");
+    __asm volatile("la gp, __global_pointer$");
+    __asm volatile(".option pop");
+    __asm volatile("la sp, __stack_top$");
+    main(1, (char**)0);
   }
 }

@@ -121,6 +121,7 @@ TF_LITE_MICRO_TEST(TestInvoke) {
   for (int i = 0; i < input->bytes; ++i) {
     input->data.uint8[i] = no_features_data[i];
   }
+  TF_LITE_REPORT_ERROR(error_reporter, "I AM PRINTING WEIRD STUFF\n");
 
   // Run the model on this "No" input.
   invoke_status = interpreter.Invoke();
